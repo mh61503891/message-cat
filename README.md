@@ -4,6 +4,17 @@ Under construction!
 
 ## Usage
 
+Directory structure:
+
+- .env
+- rules/
+  - example_rule_1.rb
+  - example_rule_2.rb
+  - example_rule_3.rb
+  - ...
+- example.rb
+- Gemfile
+
 `.env`:
 
 ```.env
@@ -19,7 +30,7 @@ RULES_PATH=rules
 MAILBOX=Inbox
 ```
 
-`rules/example.rb`
+`rules/example_rule_1.rb`
 
 ```ruby
 filter {
