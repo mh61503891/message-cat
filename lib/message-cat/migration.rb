@@ -3,7 +3,7 @@ require 'mail'
 require 'active_support/core_ext/string/filters'
 require 'active_support/core_ext/object/blank'
 
-class MessageCat
+module MessageCat
   class Migration
 
     def initialize(config)

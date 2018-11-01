@@ -1,8 +1,8 @@
 require 'message-cat/core/action'
 require 'message-cat/core/pattern'
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Filters
 
       # @param [String] mailbox_name

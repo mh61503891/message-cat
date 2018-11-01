@@ -27,8 +27,8 @@ class Message
 
 end
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Pattern
 
       def initialize(pattern)

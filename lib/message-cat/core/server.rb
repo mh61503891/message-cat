@@ -2,8 +2,8 @@ require 'net/imap'
 require 'colorize'
 require 'active_support/core_ext/object/blank'
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Server
 
       def initialize(host:, port: nil, user: nil, password: nil)

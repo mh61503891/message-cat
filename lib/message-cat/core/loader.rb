@@ -1,7 +1,7 @@
 require 'message-cat/core/parser'
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Loader
 
       # @param [String] path the absolute path of a directory including rule files.

@@ -2,8 +2,8 @@ require 'message-cat/core/filters'
 require 'active_support/core_ext/numeric/time'
 require 'mail'
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Executor
 
       def initialize(server, mailboxes, filters)

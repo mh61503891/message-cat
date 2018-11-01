@@ -3,8 +3,8 @@ require 'colorize'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array/access'
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Action
 
       # @param [String] name

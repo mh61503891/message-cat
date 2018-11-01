@@ -1,2 +1,2 @@
-class MessageCat
+module MessageCat
 end

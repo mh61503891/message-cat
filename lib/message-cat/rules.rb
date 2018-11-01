@@ -2,7 +2,7 @@ require 'message-cat/core/server'
 require 'message-cat/core/loader'
 require 'message-cat/core/executor'
 
-class MessageCat
+module MessageCat
   class Rules
 
     def initialize(config)

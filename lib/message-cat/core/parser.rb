@@ -94,8 +94,8 @@ def filter_items_to_object(filter_items)
   }
 end
 
-class MessageCat
-  class Core
+module MessageCat
+  module Core
     class Parser
 
       def self.parse(path)
