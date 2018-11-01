@@ -15,7 +15,7 @@ module MessageCat
       @mailboxes = @config.dig(:mailboxes)
     end
 
-    def execute
+    def run
       @mailboxes.each do |mailbox|
         src_path = Net::IMAP.encode_utf7(mailbox)
         dst_path = Net::IMAP.encode_utf7(mailbox)
