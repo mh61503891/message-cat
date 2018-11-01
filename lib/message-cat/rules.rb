@@ -15,21 +15,21 @@ module MessageCat
 
     private
 
-    def server
-      MessageCat::Core::Server.new(@config.dig(:server).slice(:host, :port, :user, :password))
-    end
+      def server
+        MessageCat::Core::Server.new(@config.dig(:server).slice(:host, :port, :user, :password))
+      end
 
-    def mailboxes
-      @config.dig(:mailboxes)
-    end
+      def mailboxes
+        @config.dig(:mailboxes)
+      end
 
-    def rules
-      MessageCat::Core::Loader.new(@config.dig(:rules_path)).execute
-    end
+      def rules
+        MessageCat::Core::Loader.new(@config.dig(:rules_path)).execute
+      end
 
-    def execute
-      MessageCat::Core::Executor.new(server, mailboxes, rules).execute
-    end
+      def execute
+        MessageCat::Core::Executor.new(server, mailboxes, rules).execute
+      end
 
   end
 end
