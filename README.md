@@ -33,7 +33,7 @@ Create the setting for IMAP servers:
 ```sh
 $ gem install sekrets
 $ echo 'master-password' > .sekrets.key
-$ sekrets edit setting.yml.enc
+$ sekrets edit settings.yml.enc
 ```
 
 settings.yml.enc:
@@ -74,9 +74,9 @@ require 'yaml'
 require 'active_support/core_ext/hash/keys'
 require 'message-cat/migration'
 # load secret config
-servers_config = Sekrets.settings_for('config.yml.enc').deep_symbolize_keys
+servers_config = Sekrets.settings_for('settings.yml.enc').deep_symbolize_keys
 # load non-secret config
-mailboxes_config = YAML.load(File.read('tmp/test.yml')).deep_symbolize_keys
+mailboxes_config = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
 # merge configs
 config = servers_config.merge(mailboxes_config)
 # Execute migration
