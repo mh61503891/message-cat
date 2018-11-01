@@ -1,11 +1,10 @@
 PATH
   remote: .
   specs:
-    message-cat (0.3.0)
+    message-cat (0.4.0)
       activesupport
       colorize
       mail
-      sekrets
 
 GEM
   remote: https://rubygems.org/
@@ -16,14 +15,12 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     arrayfields (4.9.2)
-    awesome_print (1.8.0)
     chronic (0.10.2)
     coderay (1.1.2)
     coerce (0.0.8)
       chronic (>= 0.6.2)
     colorize (0.8.1)
     concurrent-ruby (1.0.5)
-    dotenv (2.5.0)
     fattr (2.4.0)
     highline (1.7.10)
     i18n (1.1.1)
@@ -56,10 +53,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  awesome_print
-  dotenv
   message-cat!
   pry
+  sekrets
 
 BUNDLED WITH
-   1.16.5
+   1.17.1

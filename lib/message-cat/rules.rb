@@ -1,5 +1,6 @@
 require 'message-cat/core/server'
 require 'message-cat/core/loader'
+require 'message-cat/core/rules'
 require 'message-cat/core/executor'
 
 module MessageCat
@@ -24,7 +25,8 @@ module MessageCat
       end
 
       def rules
-        MessageCat::Core::Loader.new(@config.dig(:rules_path)).execute
+        rules = MessageCat::Core::Loader.new(@config.dig(:rules_path)).execute
+        MessageCat::Core::Rules.new(rules)
       end
 
       def execute

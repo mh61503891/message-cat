@@ -1,4 +1,3 @@
-require 'message-cat/core/rules'
 require 'active_support/core_ext/numeric/time'
 require 'mail'
 require 'colorize'
@@ -10,7 +9,7 @@ module MessageCat
       def initialize(server, mailboxes, rules)
         @server = server
         @mailboxes = mailboxes
-        @rules = MessageCat::Core::Rules.new(rules)
+        @rules = rules
       end
 
       def execute
@@ -25,8 +24,8 @@ module MessageCat
           # select
           @server.select(mailbox)
           # search
-          # keys = 'all'
-          keys = ['SINCE', Date.today.ago((7).days).strftime("%d-%b-%Y")]
+          keys = 'all'
+          # keys = ['SINCE', Date.today.ago((7).days).strftime("%d-%b-%Y")]
           uids = @server.imap.uid_search(keys).reverse
           uids.each_slice(1) do |uids_subset|
             # fetch

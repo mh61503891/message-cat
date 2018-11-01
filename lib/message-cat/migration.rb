@@ -1,4 +1,4 @@
-require 'message-cat/server'
+require 'message-cat/core/server'
 require 'mail'
 require 'active_support/core_ext/string/filters'
 require 'active_support/core_ext/object/blank'
@@ -9,8 +9,8 @@ module MessageCat
     def initialize(config)
       @config = config
       @servers = {
-        src: MessageCat::Server.new(@config.dig(:servers, :src).slice(:host, :port, :user, :password)),
-        dst: MessageCat::Server.new(@config.dig(:servers, :dst).slice(:host, :port, :user, :password)),
+        src: MessageCat::Core::Server.new(@config.dig(:servers, :src).slice(:host, :port, :user, :password)),
+        dst: MessageCat::Core::Server.new(@config.dig(:servers, :dst).slice(:host, :port, :user, :password)),
       }
       @mailboxes = @config.dig(:mailboxes)
     end
