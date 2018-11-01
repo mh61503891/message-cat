@@ -1,4 +1,4 @@
-class FilterDSL
+class RuleDSL
 
   attr_reader :name_item
   attr_reader :pattern_items
@@ -84,30 +84,26 @@ class ActionsDSL
 
 end
 
-def filter_items_to_object(filter_items)
-  return filter_items.collect { |filter|
-    {
-      name: filter.name_item,
-      patterns: filter.pattern_items,
-      actions: filter.action_items
-    }
-  }
-end
-
 module MessageCat
   module Core
     class Parser
 
       def self.parse(path)
-        @filter_items = []
+        @rule_items = []
         instance_eval(File.read(path))
-        return filter_items_to_object(@filter_items)
+        return @rule_items.collect { |rule|
+          {
+            name: rule.name_item,
+            patterns: rule.pattern_items,
+            actions: rule.action_items
+          }
+        }
       end
 
-      def self.filter(name = nil, &block)
-        filter = ::FilterDSL.new(name)
-        filter.instance_eval(&block)
-        @filter_items << filter
+      def self.rule(name = nil, &block)
+        rule = ::RuleDSL.new(name)
+        rule.instance_eval(&block)
+        @rule_items << rule
       end
 
     end

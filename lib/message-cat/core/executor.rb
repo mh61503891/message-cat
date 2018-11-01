@@ -1,30 +1,30 @@
-require 'message-cat/core/filters'
+require 'message-cat/core/rules'
 require 'active_support/core_ext/numeric/time'
 require 'mail'
+require 'colorize'
 
 module MessageCat
   module Core
     class Executor
 
-      def initialize(server, mailboxes, filters)
+      def initialize(server, mailboxes, rules)
         @server = server
         @mailboxes = mailboxes
-        @filters = filters
+        @rules = MessageCat::Core::Rules.new(rules)
       end
 
       def execute
         @mailboxes.each do |mailbox|
-          execute_filters(mailbox, @filters)
+          execute_rules(mailbox, @rules)
         end
       end
 
       private
 
-        def execute_filters(mailbox_name, mailbox_filters)
+        def execute_rules(mailbox, rules)
           # select
-          @server.select(mailbox_name)
+          @server.select(mailbox)
           # search
-          filters = MessageCat::Core::Filters.new(mailbox_name, mailbox_filters)
           # keys = 'all'
           keys = ['SINCE', Date.today.ago((7).days).strftime("%d-%b-%Y")]
           uids = @server.imap.uid_search(keys).reverse
@@ -34,11 +34,10 @@ module MessageCat
               uid = data.attr['UID']
               body = data.attr['BODY[]']
               message = Mail.new(body)
-              pp message.subject
-              # filters.execute(@server, uid, message)
+              @rules.execute(@server, uid, message)
             end
           rescue => e
-            pp e
+            puts e.to_s.red
           end
         end
 

@@ -14,7 +14,7 @@ module MessageCat
         @args = args
       end
 
-      # @param [Map<String, MessageCat::Server>] servers
+      # @param [MessageCat::Core::Server] server
       # @param [String] uid
       # @param [Mail] message
       def execute(servers, uid, message)
@@ -29,60 +29,37 @@ module MessageCat
 
       private
 
-        # @param [Map<String, MessageCat::Server>] servers
+        # @param [MessageCat::Server] server
         # @param [String] uid
         # @param [Mail] message
-        def move(servers, uid, message)
+        def move(server, uid, message)
           path = @args[0]
           raise "The path cannot be blank: #{self}" if path.blank?
           # TODO: dry-run
           utf7_path = Net::IMAP.encode_utf7(path)
-          unless servers[:default].imap.list('', utf7_path)
-            puts (servers[:default].imap.create(utf7_path)[:raw_data]).to_s.strip.yellow
+          unless server.list('', utf7_path)
+            server.create(utf7_path)
           end
-          servers[:default].imap.uid_move(uid, utf7_path)
-          # servers[:default].imap.uid_copy(uid, utf7_path)
-          # servers[:default].imap.uid_store(uid, '+FLAGS', [:Deleted])
-          # servers[:default].imap.expunge
+          server.imap.uid_move(uid, utf7_path)
           print "#{uid} ".light_blue
-          print "move(#{path}) ".yellow
+          print "move(#{path}) ".red
           print message.subject
           puts
         end
 
-        # TODO
-        # @param [Map<String, MessageCat::Server>] servers
+        # @param [MessageCat::Server] server
         # @param [String] uid
         # @param [Mail] message
-        def migrate(servers, uid, message)
-          raise NotImplementedError
-          # path = @action[:args][0]
-          # utf7_path = Net::IMAP.encode_utf7(path)
-          # unless dst_imap.list('', utf7_path)
-          #   puts (dst_imap.create(utf7_path)[:raw_data]).to_s.strip.yellow
-          # end
-          # dst_imap.append(utf7_path, m.raw_source)
-          # src_imap.uid_store(uid, '+FLAGS', [:Deleted])
-          # src_imap.expunge
-          # print "#{uid} ".light_blue
-          # print "migrate(#{path}) ".red
-          # print message.subject
-          # puts
-        end
-
-        # @param [Map<String, MessageCat::Server>] servers
-        # @param [String] uid
-        # @param [Mail] message
-        def pass(servers, uid, message)
+        def pass(server, uid, message)
           print "#{uid} ".blue
           print message.subject
           puts
         end
 
-        # @param [Map<String, MessageCat::Server>] servers
+        # @param [MessageCat::Server] server
         # @param [String] uid
         # @param [Mail] message
-        def none(servers, uid, message)
+        def none(server, uid, message)
           # do noting
         end
 
