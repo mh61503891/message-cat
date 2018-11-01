@@ -73,14 +73,14 @@ require 'sekrets'
 require 'yaml'
 require 'active_support/core_ext/hash/keys'
 require 'message-cat/migration'
-# load secret config
-servers_config = Sekrets.settings_for('settings.yml.enc').deep_symbolize_keys
-# load non-secret config
-mailboxes_config = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
-# merge configs
-config = servers_config.merge(mailboxes_config)
+# load secret settings
+servers_settings = Sekrets.settings_for('settings.yml.enc').deep_symbolize_keys
+# load non-secret settings
+mailboxes_settings = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
+# merge settings
+settings = servers_settings.merge(mailboxes_settings)
 # Execute migration
-MessageCat::Migration.new(config).execute
+MessageCat::Migration.new(settings).execute
 ```
 
 #### 4. Run
