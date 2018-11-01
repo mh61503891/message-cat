@@ -4,7 +4,7 @@ Under construction!
 
 ## Usage
 
-### E-mails Migration between servers via IMAP
+### E-mails migration between servers via IMAP
 
 #### 1. Setup Gemfile
 
@@ -81,6 +81,12 @@ mailboxes_config = YAML.load(File.read('tmp/test.yml')).deep_symbolize_keys
 config = servers_config.merge(mailboxes_config)
 # Execute migration
 MessageCat::Migration.new(config).execute
+```
+
+#### 4. Run
+
+```sh
+$ bundle exec ruby migration.rb
 ```
 
 
