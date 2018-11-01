@@ -4,7 +4,7 @@ Under construction!
 
 ## Usage
 
-### E-mails migration between servers via IMAP
+### E-mails migration between IMAP servers
 
 #### 1. Setup Gemfile
 
@@ -83,7 +83,7 @@ settings = servers_settings.merge(mailboxes_settings)
 MessageCat::Migration.new(settings).execute
 ```
 
-#### 4. Run
+#### 4. Run your codes
 
 ```sh
 $ bundle exec ruby migration.rb
