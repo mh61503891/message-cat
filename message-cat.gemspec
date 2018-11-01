@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'mail'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'colorize'
+  spec.add_dependency 'sekrets'
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'dotenv'
   spec.add_development_dependency 'pry'

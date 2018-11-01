@@ -9,8 +9,8 @@ class MessageCat
     def initialize(config)
       @config = config
       @servers = {
-        src: MessageCat::Server.new(@config.dig(:servers, :src)),
-        dst: MessageCat::Server.new(@config.dig(:servers, :dst)),
+        src: MessageCat::Server.new(@config.dig(:servers, :src).slice(:host, :port, :user, :password)),
+        dst: MessageCat::Server.new(@config.dig(:servers, :dst).slice(:host, :port, :user, :password)),
       }
       @mailboxes = @config.dig(:mailboxes)
     end

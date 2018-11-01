@@ -4,6 +4,88 @@ Under construction!
 
 ## Usage
 
+### E-mails Migration between servers via IMAP
+
+#### 1. Setup Gemfile
+
+```sh
+$ gem install bundler
+$ bundle init
+```
+
+Gemfile:
+
+```ruby
+source 'https://rubygems.org'
+gem 'message-cat', git: 'https://github.com/mh61503891/message-cat'
+```
+
+Install gems via bundler
+
+```sh
+$ bundle install
+```
+
+#### 2. Create your settings
+
+Create the setting for IMAP servers:
+
+```sh
+$ gem install sekrets
+$ echo 'master-password' > .sekrets.key
+$ sekrets edit setting.yml.enc
+```
+
+settings.yml.enc:
+
+```yml
+servers: {
+  src: {
+    host: 'example.net',
+    user: 'example',
+    password: 'example',
+    separator: '.'
+  },
+  dst: {
+    host: 'example.com',
+    user: 'example',
+    password: 'example',
+    separator: '.'
+  }
+}
+```
+
+mailboxes.yml:
+
+```yml
+mailboxes:
+  - example.projecta
+  - example.projectb
+  - example.projectc
+```
+
+#### 3. Write your codes
+
+migration.rb:
+
+```ruby
+require 'sekrets'
+require 'yaml'
+require 'active_support/core_ext/hash/keys'
+require 'message-cat/migration'
+# load secret config
+servers_config = Sekrets.settings_for('config.yml.enc').deep_symbolize_keys
+# load non-secret config
+mailboxes_config = YAML.load(File.read('tmp/test.yml')).deep_symbolize_keys
+# merge configs
+config = servers_config.merge(mailboxes_config)
+# Execute migration
+MessageCat::Migration.new(config).execute
+```
+
+
+### E-mail filter (Under construction!)
+
 Directory structure:
 
 - .env
