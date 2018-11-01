@@ -1,12 +1,10 @@
 # Message Cat
 
-Under construction!
-
 ## Usage
 
 ### E-mails migration between IMAP servers
 
-#### 1. Setup Gemfile
+#### 1. Setup Gemfile and install gems
 
 ```sh
 $ gem install bundler
@@ -18,25 +16,26 @@ Gemfile:
 ```ruby
 source 'https://rubygems.org'
 gem 'message-cat', git: 'https://github.com/mh61503891/message-cat'
+gem 'sekrets'
+gem 'activesupport'
 ```
 
-Install gems via bundler
+Install gems
 
 ```sh
 $ bundle install
 ```
 
-#### 2. Create your settings
+#### 2. Create your config
 
-Create the setting for IMAP servers:
+Create the config file for IMAP servers:
 
 ```sh
-$ gem install sekrets
 $ echo 'master-password' > .sekrets.key
-$ sekrets edit settings.yml.enc
+$ bundle exec sekrets edit servers.yml.enc
 ```
 
-settings.yml.enc:
+servers.yml.enc:
 
 ```yml
 servers: {
@@ -64,7 +63,7 @@ mailboxes:
   - example.projectc
 ```
 
-#### 3. Write your codes
+#### 3. Write your scripts
 
 migration.rb:
 
@@ -73,22 +72,21 @@ require 'sekrets'
 require 'yaml'
 require 'active_support/core_ext/hash/keys'
 require 'message-cat/migration'
-# load secret settings
-servers_settings = Sekrets.settings_for('settings.yml.enc').deep_symbolize_keys
-# load non-secret settings
-mailboxes_settings = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
-# merge settings
-settings = servers_settings.merge(mailboxes_settings)
-# Execute migration
-MessageCat::Migration.new(settings).execute
+# Load secret config
+servers_config = Sekrets.settings_for('servers.yml.enc').deep_symbolize_keys
+# Load non-secret config
+mailboxes_config = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
+# Merge configs
+config = servers_config.merge(mailboxes_config)
+# Run migration
+MessageCat::Migration.new(settings).run
 ```
 
-#### 4. Run your codes
+#### 4. Run your scripts
 
 ```sh
 $ bundle exec ruby migration.rb
 ```
-
 
 ### E-mail filter (Under construction!)
 
