@@ -43,7 +43,7 @@ class MessageCat
     end
 
     def select(path)
-      puts @imap.select(Net::IMAP.encode_utf7(path))[:raw_data].strip.light_black
+      puts imap.select(Net::IMAP.encode_utf7(path))[:raw_data].strip.light_black
     end
 
   end
