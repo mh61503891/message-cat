@@ -2,6 +2,8 @@ require 'net/imap'
 require 'colorize'
 require 'active_support/core_ext/object/blank'
 
+# TODO: logging
+# TODO: doc
 module MessageCat
   module Core
     class Server
@@ -47,17 +49,17 @@ module MessageCat
         puts imap.select(Net::IMAP.encode_utf7(path))[:raw_data].strip.light_black
       end
 
-      # @return [Array or nil] an array of #<struct Net::IMAP::MailboxList>
-      def list(refname, mailbox)
-        imap.list(Net::IMAP.encode_utf7(refname), Net::IMAP.encode_utf7(mailbox))
-      end
-
       def create(path)
         puts imap.create(Net::IMAP.encode_utf7(path))[:raw_data].strip.yellow
       end
 
       def append(path, message)
         imap.append(Net::IMAP.encode_utf7(path), message)
+      end
+
+      # @return [Array or nil] an array of #<struct Net::IMAP::MailboxList>
+      def list(refname, mailbox)
+        imap.list(Net::IMAP.encode_utf7(refname), Net::IMAP.encode_utf7(mailbox))
       end
 
       def uid_store(set, attr, flags)
