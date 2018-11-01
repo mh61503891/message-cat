@@ -1,21 +1,3 @@
-class MailboxDSL
-
-  attr_reader :name_items
-  attr_reader :filter_items
-
-  def initialize(names = [], filters = [])
-    @name_items = [names].flatten.uniq.compact
-    @filter_items = [filters].flatten.uniq.compact
-  end
-
-  def filter(name = nil, &block)
-    filter = FilterDSL.new(name)
-    filter.instance_eval(&block)
-    @filter_items << filter
-  end
-
-end
-
 class FilterDSL
 
   attr_reader :name_item
@@ -102,42 +84,32 @@ class ActionsDSL
 
 end
 
-def mailbox_items_to_object(mailbox_items)
-  return mailbox_items.map { |mailbox|
+def filter_items_to_object(filter_items)
+  return filter_items.collect { |filter|
     {
-      names: mailbox.name_items,
-      filters: mailbox.filter_items.collect { |filter|
-        {
-          name: filter.name_item,
-          patterns: filter.pattern_items,
-          actions: filter.action_items
-        }
-      }
+      name: filter.name_item,
+      patterns: filter.pattern_items,
+      actions: filter.action_items
     }
   }
 end
 
 class MessageCat
-  class Parser
+  class Core
+    class Parser
 
-    def self.parse(path)
-      @mailbox_items = []
-      instance_eval(File.read(path))
-      return mailbox_items_to_object(@mailbox_items)
+      def self.parse(path)
+        @filter_items = []
+        instance_eval(File.read(path))
+        return filter_items_to_object(@filter_items)
+      end
+
+      def self.filter(name = nil, &block)
+        filter = ::FilterDSL.new(name)
+        filter.instance_eval(&block)
+        @filter_items << filter
+      end
+
     end
-
-    def self.mailbox(*names, &block)
-      mailbox = ::MailboxDSL.new(names)
-      mailbox.instance_eval(&block)
-      @mailbox_items << mailbox
-    end
-
-    def self.filter(name = nil, &block)
-      filter = ::FilterDSL.new(name)
-      filter.instance_eval(&block)
-      mailbox = ::MailboxDSL.new(nil, filter)
-      @mailbox_items << mailbox
-    end
-
   end
 end
