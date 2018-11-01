@@ -1,0 +1,46 @@
+require 'message-cat/server'
+require 'mail'
+require 'active_support/core_ext/string/filters'
+require 'active_support/core_ext/object/blank'
+
+class MessageCat
+  class Migration
+
+    def initialize(config)
+      @config = config
+      @servers = {
+        src: MessageCat::Server.new(@config.dig(:servers, :src)),
+        dst: MessageCat::Server.new(@config.dig(:servers, :dst)),
+      }
+      @mailboxes = @config.dig(:mailboxes)
+    end
+
+    def execute
+      @mailboxes.each do |mailbox|
+        src_path = Net::IMAP.encode_utf7(mailbox)
+        dst_path = Net::IMAP.encode_utf7(mailbox)
+        @servers[:src].select(src_path)
+        if @servers[:dst].list('', dst_path).blank?
+          @servers[:dst].create(dst_path)
+        end
+        uids = @servers[:src].imap.uid_search('all').reverse
+        uids.each_slice(100).with_index do |set, index|
+          puts "each_slice(100).with_index(#{set}, #{index}/#{uids.size})".cyan
+          puts "uid_fetch(#{set}, BODY.PEEK[])".cyan
+          @servers[:src].imap.uid_fetch(set, 'BODY.PEEK[]').each do |data|
+            uid = data.attr['UID']
+            body = data.attr['BODY[]']
+            @servers[:dst].append(dst_path, body)
+            print "#{uid} ".light_blue
+            print "migrate(#{dst_path}) ".red
+            print Mail.new(body).subject.truncate(60)
+            puts
+          end
+          @servers[:src].uid_store(set, '+FLAGS', [:Deleted])
+          @servers[:src].expunge
+        end
+      end
+    end
+
+  end
+end

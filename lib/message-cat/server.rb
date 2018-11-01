@@ -46,5 +46,29 @@ class MessageCat
       puts imap.select(Net::IMAP.encode_utf7(path))[:raw_data].strip.light_black
     end
 
+    # @return [Array or nil] an array of #<struct Net::IMAP::MailboxList>
+    def list(refname, mailbox)
+      imap.list(Net::IMAP.encode_utf7(refname), Net::IMAP.encode_utf7(mailbox))
+    end
+
+    def create(path)
+      puts imap.create(Net::IMAP.encode_utf7(path))[:raw_data].strip.yellow
+    end
+
+    def append(path, message)
+      imap.append(Net::IMAP.encode_utf7(path), message)
+    end
+
+    def uid_store(set, attr, flags)
+      puts "uid_store(#{set}, #{attr}, #{flags})".cyan
+      imap.uid_store(set, attr, flags)
+    end
+
+    # @return [Array] an array of expunged-message sequence numbers
+    def expunge
+      puts "expunge()".cyan
+      imap.expunge
+    end
+
   end
 end
