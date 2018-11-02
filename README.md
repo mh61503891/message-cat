@@ -10,8 +10,8 @@ Directory structure:
 
 * Gemfile
 * .sekrets.key
-* servers.yml.enc
-* mailboxes.yml
+* config.yml.enc
+* migration.yml
 * migration.rb
 
 #### 1. Setup Gemfile and install gems
@@ -42,31 +42,33 @@ Create the config file for IMAP servers:
 
 ```sh
 $ echo 'master-password' > .sekrets.key
-$ bundle exec sekrets edit servers.yml.enc
+$ bundle exec sekrets edit config.yml.enc
 ```
 
-servers.yml.enc:
+config.yml.enc:
 
 ```yml
-servers: {
-  src: {
-    host: 'example.net',
-    user: 'example',
-    password: 'example',
-    separator: '.'
-  },
-  dst: {
-    host: 'example.com',
-    user: 'example',
-    password: 'example',
-    separator: '.'
+servers:
+  src:
+    user: example
+    password: example
+  dst:
+    user: example
+    password: example
   }
 }
 ```
 
-mailboxes.yml:
+migration.yml:
 
 ```yml
+servers:
+  src:
+    host: example.net
+    separator: .
+  dst:
+    host: example.com
+    separator: .
 mailboxes:
   - example.project_a
   - example.project_b
@@ -81,15 +83,16 @@ migration.rb:
 require 'sekrets'
 require 'yaml'
 require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/hash/deep_merge'
 require 'message-cat/migration'
 # Load secret config
-servers_config = Sekrets.settings_for('servers.yml.enc').deep_symbolize_keys
+secret_config = Sekrets.settings_for('config.yml.enc').deep_symbolize_keys
 # Load non-secret config
-mailboxes_config = YAML.load(File.read('mailboxes.yml')).deep_symbolize_keys
+migration_config = YAML.load(File.read('migration.yml')).deep_symbolize_keys
 # Merge configs
-config = servers_config.merge(mailboxes_config)
+config = migration_config.deep_merge(secret_config)
 # Run migration
-MessageCat::Migration.new(settings).run
+MessageCat::Migration.new(config).run
 ```
 
 #### 4. Run your scripts
@@ -108,13 +111,14 @@ Directory structure:
 
 * Gemfile
 * .sekrets.key
-* server.yml.enc
+* config.yml.enc
+* rules.yml
+* rules.rb
 * rules/
     * example_rule_1.rb
     * example_rule_2.rb
     * example_rule_3.rb
     * ...
-* rules.rb
 
 #### 1. Setup Gemfile and install gems
 
@@ -144,18 +148,26 @@ Create the config file for IMAP servers:
 
 ```sh
 $ echo 'master-password' > .sekrets.key
-$ bundle exec sekrets edit server.yml.enc
+$ bundle exec sekrets edit config.yml.enc
 ```
 
-server.yml.enc:
+config.yml.enc:
 
 ```yml
-server: {
-  host: 'example.net',
-  user: 'example',
-  password: 'example',
-  separator: '.'
-}
+server:
+  user: example
+  password: example
+```
+
+rules.yml:
+
+```yml
+server:
+  host: example.net
+  separator: .
+mailboxes:
+  - Inbox
+rules_path: ./rules
 ```
 
 #### 3. Write your scripts
@@ -164,19 +176,16 @@ rules.rb:
 
 ```ruby
 require 'sekrets'
-require 'active_support/core_ext/hash/keys'
 require 'yaml'
+require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/hash/deep_merge'
 require 'message-cat/rules'
 # Load secret config
-server_config = Sekrets.settings_for('server.yml.enc').deep_symbolize_keys
-# Setup config
-config = {
-  server: servers_config.dig(:server),
-  mailboxes: [
-    'Inbox'
-  ],
-  rules_path: './rules'
-}
+secret_config = Sekrets.settings_for('config.yml.enc').deep_symbolize_keys
+# Load non-secret config
+rules_config = YAML.load(File.read('rules.yml')).deep_symbolize_keys
+# Merge configs
+config = rules_config.deep_merge(secret_config)
 # Run rules
 MessageCat::Rules.new(config).run
 ```
