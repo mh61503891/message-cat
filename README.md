@@ -239,6 +239,11 @@ Rule DSL API:
     * [x] pass
     * [x] none
 
+## References
+
+* [imapsync/imapsync](https://github.com/imapsync/imapsync)
+* [bai/imap-sync: Synchronizes messages between IMAP servers](https://github.com/bai/imap-sync)
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
