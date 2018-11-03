@@ -92,7 +92,7 @@ migration_config = YAML.load(File.read('migration.yml')).deep_symbolize_keys
 # Merge configs
 config = migration_config.deep_merge(secret_config)
 # Run migration
-MessageCat::Migration.new(config).run
+MessageCat::Migration.run(config)
 ```
 
 #### 4. Run your scripts
@@ -119,6 +119,7 @@ Directory structure:
     * example_rule_2.rb
     * example_rule_3.rb
     * ...
+* rules.sqlite3
 
 #### 1. Setup Gemfile and install gems
 
@@ -168,6 +169,7 @@ server:
 mailboxes:
   - Inbox
 rules_path: ./rules
+database_path: ./rules.sqlite3
 ```
 
 #### 3. Write your scripts
@@ -187,7 +189,7 @@ rules_config = YAML.load(File.read('rules.yml')).deep_symbolize_keys
 # Merge configs
 config = rules_config.deep_merge(secret_config)
 # Run rules
-MessageCat::Rules.new(config).run
+MessageCat::Rules.run(config)
 ```
 
 #### 4. Add rules
@@ -231,22 +233,25 @@ $ bundle exec ruby rules.rb
 
 ### Todo
 
-Rule DSL API:
+MessageCat::Rules:
 
-* rule/patterns
-    * [x] from_addrs(patterns)
-    * [x] to_addrs(patterns)
-    * [x] cc_addrs(patterns)
-    * [x] subject(patterns)
-    * [x] message(&block)
-        * [x] from_addrs
-        * [x] to_addrs
-        * [x] cc_addrs
-        * [x] subject
-* rule/actions
-    * [x] move(mailbox)
-    * [x] pass
-    * [x] none
+* Rule DSL API
+    * rule/patterns
+        * [x] from_addrs(patterns)
+        * [x] to_addrs(patterns)
+        * [x] cc_addrs(patterns)
+        * [x] subject(patterns)
+        * [x] message(&block)
+            * [x] from_addrs
+            * [x] to_addrs
+            * [x] cc_addrs
+            * [x] subject
+    * rule/actions
+        * [x] move(mailbox)
+        * [x] pass
+        * [x] none
+* [x] Support the database of emails for cacheing
+* [ ] Support encryption of the database
 
 ## References
 

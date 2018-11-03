@@ -1,3 +1,4 @@
 tmp
 .sekrets.key
 config.yml.enc
+rules.sqlite3

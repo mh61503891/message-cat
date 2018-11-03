@@ -17,6 +17,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'mail'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'colorize'
+  spec.add_dependency 'activerecord'
+  spec.add_dependency 'sqlite3'
   spec.add_development_dependency 'sekrets'
   spec.add_development_dependency 'pry'
 end
