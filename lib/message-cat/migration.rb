@@ -21,7 +21,7 @@ module MessageCat
         end
         uids = servers[:src].imap.uid_search('all').reverse
         uids.each_slice(100).with_index do |set, index|
-          puts "each_slice(100).with_index(#{set}, #{index}/#{uids.size})".cyan
+          puts "each_slice(100).with_index(#{set}, #{index * set.size}/#{uids.size})".cyan
           puts "uid_fetch(#{set}, BODY.PEEK[])".cyan
           servers[:src].imap.uid_fetch(set, 'BODY.PEEK[]').each do |data|
             uid = data.attr['UID']
