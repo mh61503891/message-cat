@@ -46,10 +46,21 @@ module MessageCat
           target_uids = uids - MessageCat::Core::Database::Mail.where(uid: uids).select(:uid).pluck(:uid)
           if !target_uids.empty?
             @server.imap.uid_fetch(target_uids, 'BODY.PEEK[]').each do |data|
-              MessageCat::Core::Database::Mail.create!(
-                uid: data.attr['UID'],
-                body: data.attr['BODY[]']
-              )
+              if data.attr.has_key?('UID') && data.attr.has_key?('BODY[]')
+                MessageCat::Core::Database::Mail.create!(
+                  uid: data.attr['UID'],
+                  body: data.attr['BODY[]']
+                )
+              else
+                # TODO たまにUIDとBODY[]の無いデータが出て来るのはなぜ？
+                # #<struct Net::IMAP::FetchData seqno=4994, attr={"FLAGS"=>[:Seen, "$NotJunk", "NotJunk"]}>
+                # data.attr
+                # require 'pry'
+                # binding.pry
+              end
+            # rescue ActiveRecord::ActiveRecordError => e
+              # require 'pry'
+              # binding.pry
             end
           end
           return MessageCat::Core::Database::Mail.where(uid: uids).map { |data|
