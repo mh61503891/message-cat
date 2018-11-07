@@ -28,6 +28,7 @@ module MessageCat
           @server.select(mailbox)
           # search
           keys = 'all'
+          # TODO: support filters
           # keys = ['SINCE', Date.today.ago((7).days).strftime("%d-%b-%Y")]
           uids = @server.imap.uid_search(keys).reverse
           uids.each_slice(1) do |uids_subset|
