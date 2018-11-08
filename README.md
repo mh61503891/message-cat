@@ -168,7 +168,8 @@ server:
   separator: .
 mailboxes:
   - Inbox
-filters_path: ./filters
+filters_paths:
+  - ./filters
 database_path: ./database.sqlite3
 ```
 
