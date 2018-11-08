@@ -11,7 +11,7 @@ module MessageCat
       end
       server = MessageCat::Core::Server.new(config.dig(:server).slice(:host, :port, :user, :password))
       mailboxes = config.dig(:mailboxes)
-      filters = MessageCat::Core::Loader.new(config.dig(:filters_path)).execute
+      filters = MessageCat::Core::Loader.new(config.dig(:filters_paths)).execute
       MessageCat::Core::Executor.new(server, mailboxes, filters).execute
     end
 
