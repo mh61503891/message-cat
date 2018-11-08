@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    message-cat (0.5.1)
+    message-cat (0.6.0)
       activerecord
       activesupport
       colorize
@@ -29,7 +29,7 @@ GEM
     coerce (0.0.8)
       chronic (>= 0.6.2)
     colorize (0.8.1)
-    concurrent-ruby (1.1.2)
+    concurrent-ruby (1.1.3)
     fattr (2.4.0)
     highline (1.7.10)
     i18n (1.1.1)

@@ -1,34 +1,45 @@
-class RuleDSL
+module MessageCat
+  module Core
+    class Parser
 
-  attr_reader :name_item
-  attr_reader :pattern_items
-  attr_reader :action_items
+      def self.parse(path)
+        @pattern_items = {}
+        @rule_items = []
+        instance_eval(File.read(path))
+        return {
+          patterns: @pattern_items,
+          rules: @rule_items
+        }
+      end
 
-  def initialize(name = nil)
-    @name_item = name
-    @pattern_items = []
-    @action_items = []
+      def self.pattern(name, &block)
+        pattern = ::PatternDSL.new(name)
+        pattern.instance_eval(&block)
+        @pattern_items[pattern.name] ||= []
+        @pattern_items[pattern.name] << pattern.items
+      end
+
+      def self.rule(name = nil, &block)
+        rule = ::RuleDSL.new(name)
+        rule.instance_eval(&block)
+        @rule_items << {
+          name: rule.name,
+          patterns: rule.pattern_items,
+          actions: rule.action_items,
+        }
+      end
+
+    end
   end
-
-  def patterns(&block)
-    patterns = PatternsDSL.new
-    patterns.instance_eval(&block)
-    @pattern_items += patterns.items
-  end
-
-  def actions(&block)
-    actions = ActionsDSL.new
-    actions.instance_eval(&block)
-    @action_items += actions.items
-  end
-
 end
 
-class PatternsDSL
+class PatternDSL
 
+  attr_reader :name
   attr_reader :items
 
-  def initialize
+  def initialize(name = nil)
+    @name = name
     @items = []
   end
 
@@ -58,54 +69,41 @@ class PatternsDSL
 
 end
 
-class ActionsDSL
+class RuleDSL
 
-  attr_reader :items
+  attr_reader :name
+  attr_reader :pattern_items
+  attr_reader :action_items
 
-  def initialize
-    @items ||= []
+  def initialize(name = nil)
+    @name = name
+    @pattern_items = []
+    @action_items = []
+  end
+
+  def patterns(*args)
+    @pattern_items += args.flatten.uniq.compact
   end
 
   def move(*args)
-    @items << { name: :move, args: args.flatten }
-  end
-
-  def migrate(*args)
-    @items << { name: :migrate, args: args.flatten }
+    @action_items << {
+      name: :move,
+      args: args.flatten
+    }
   end
 
   def pass(*args)
-    @items << { name: :pass, args: args.flatten }
+    @action_items << {
+      name: :pass,
+      args: args.flatten
+    }
   end
 
   def none(*args)
-    @items << { name: :none, args: args.flatten }
+    @action_items << {
+      name: :none,
+      args: args.flatten
+    }
   end
 
-end
-
-module MessageCat
-  module Core
-    class Parser
-
-      def self.parse(path)
-        @rule_items = []
-        instance_eval(File.read(path))
-        return @rule_items.collect { |rule|
-          {
-            name: rule.name_item,
-            patterns: rule.pattern_items,
-            actions: rule.action_items
-          }
-        }
-      end
-
-      def self.rule(name = nil, &block)
-        rule = ::RuleDSL.new(name)
-        rule.instance_eval(&block)
-        @rule_items << rule
-      end
-
-    end
-  end
 end

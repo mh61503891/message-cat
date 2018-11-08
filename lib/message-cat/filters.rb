@@ -3,7 +3,7 @@ require 'message-cat/core/loader'
 require 'message-cat/core/executor'
 
 module MessageCat
-  class Rules
+  class Filters
 
     def self.run(config)
       if ENV['DATABASE_URL'].blank?
@@ -11,8 +11,8 @@ module MessageCat
       end
       server = MessageCat::Core::Server.new(config.dig(:server).slice(:host, :port, :user, :password))
       mailboxes = config.dig(:mailboxes)
-      rules = MessageCat::Core::Loader.new(config.dig(:rules_path)).execute
-      MessageCat::Core::Executor.new(server, mailboxes, rules).execute
+      filters = MessageCat::Core::Loader.new(config.dig(:filters_path)).execute
+      MessageCat::Core::Executor.new(server, mailboxes, filters).execute
     end
 
   end

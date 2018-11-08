@@ -1,6 +1,6 @@
 # Message Cat
 
-Message Cat: an MUA tool to migrate emails between IMAP servers and manage emails using rules written in Ruby DSL.
+Message Cat: an MUA tool to migrate emails between IMAP servers and manage emails using filters written in Ruby DSL.
 
 ## Usage
 
@@ -105,21 +105,21 @@ $ bundle exec ruby migration.rb
 ...
 ```
 
-### Use rules to manage e-mails
+### Use filters to manage e-mails
 
 Directory structure:
 
 * Gemfile
 * .sekrets.key
 * config.yml.enc
-* rules.yml
-* rules.rb
-* rules/
-    * example_rule_1.rb
-    * example_rule_2.rb
-    * example_rule_3.rb
+* filters.yml
+* filters.rb
+* filters/
+    * example_filter_1.rb
+    * example_filter_2.rb
+    * example_filter_3.rb
     * ...
-* rules.sqlite3
+* database.sqlite3
 
 #### 1. Setup Gemfile and install gems
 
@@ -160,7 +160,7 @@ server:
   password: example
 ```
 
-rules.yml:
+filters.yml:
 
 ```yml
 server:
@@ -168,54 +168,67 @@ server:
   separator: .
 mailboxes:
   - Inbox
-rules_path: ./rules
-database_path: ./rules.sqlite3
+filters_path: ./filters
+database_path: ./database.sqlite3
 ```
 
 #### 3. Write your scripts
 
-rules.rb:
+filters.rb:
 
 ```ruby
 require 'sekrets'
 require 'yaml'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/hash/deep_merge'
-require 'message-cat/rules'
+require 'message-cat/filters'
 # Load secret config
 secret_config = Sekrets.settings_for('config.yml.enc').deep_symbolize_keys
 # Load non-secret config
-rules_config = YAML.load(File.read('rules.yml')).deep_symbolize_keys
+filters_config = YAML.load(File.read('filters.yml')).deep_symbolize_keys
 # Merge configs
-config = rules_config.deep_merge(secret_config)
-# Run rules
-MessageCat::Rules.run(config)
+config = filters_config.deep_merge(secret_config)
+# Run filters
+MessageCat::Filters.run(config)
 ```
 
-#### 4. Add rules
+#### 4. Add filters
 
-rules/example_rule_1.rb:
+filters/example_filter_1.rb:
 
 ```ruby
-rule {
-  patterns {
-    from_addrs 'notify@example.net'
+pattern('notification.example_net') {
+  from_addrs 'notify@example.net'
+}
+
+pattern('notification.example_com') {
+  from_addrs 'notify@example.com'
+}
+
+pattern('example') {
+  from_addrs [
+    'example@example.net',
+    /@(.*)example\.com$/,
+  ]
+  subject /^Example/
+  message {
+    from_addrs.size == 1
+    to_addrs.size > 1
   }
-  actions { move 'notify' }
 }
 
 rule {
-  patterns {
-    from_addrs [
-      'example@example.net',
-      /@(.*)example\.com$/,
-    ]
-    subject /^Example/
-    message {
-      from_addrs.size == 1
-      to_addrs.size > 1
-    }
+  patterns [
+    'notification.example_net',
+    'notification.example_com',
+  ]
+  actions {
+    move 'notification'
   }
+}
+
+rule {
+  patterns 'example'
   actions {
     move 'example'
   }
@@ -225,18 +238,19 @@ rule {
 #### 5. Run your scripts
 
 ```sh
-$ bundle exec ruby rules.rb
-10000 move(notify) Notify message
-10001 move(example) Example message
+$ bundle exec ruby filters.rb
+10000 move(notification.example_net) Notify message
+10001 move(notification.example_com) Notify message
+10002 move(example) Example message
 ...
 ```
 
 ### Todo
 
-MessageCat::Rules:
+MessageCat::Filters:
 
-* Rule DSL API
-    * rule/patterns
+* Filter DSL API
+    * [x] pattern
         * [x] from_addrs(patterns)
         * [x] to_addrs(patterns)
         * [x] cc_addrs(patterns)
@@ -246,7 +260,8 @@ MessageCat::Rules:
             * [x] to_addrs
             * [x] cc_addrs
             * [x] subject
-    * rule/actions
+    * [x] rule/patterns
+    * [x] rule/actions
         * [x] move(mailbox)
         * [x] pass
         * [x] none

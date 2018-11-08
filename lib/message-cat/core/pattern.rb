@@ -3,30 +3,6 @@ require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/array/access'
 require 'net/imap'
 
-class Message
-
-  def initialize(message)
-    @message = message.freeze
-  end
-
-  def from_addrs
-    @message.from_addrs
-  end
-
-  def to_addrs
-    @message.to_addrs
-  end
-
-  def cc_addrs
-    @message.cc_addrs
-  end
-
-  def subject
-    @message.subject
-  end
-
-end
-
 module MessageCat
   module Core
     class Pattern
@@ -107,4 +83,28 @@ module MessageCat
 
     end
   end
+end
+
+class Message
+
+  def initialize(message)
+    @message = message.freeze
+  end
+
+  def from_addrs
+    @message.from_addrs
+  end
+
+  def to_addrs
+    @message.to_addrs
+  end
+
+  def cc_addrs
+    @message.cc_addrs
+  end
+
+  def subject
+    @message.subject
+  end
+
 end

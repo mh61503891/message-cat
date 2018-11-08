@@ -7,23 +7,23 @@ module MessageCat
   module Core
     class Executor
 
-      def initialize(server, mailboxes, rules)
+      def initialize(server, mailboxes, task)
         @server = server
         @mailboxes = mailboxes
-        @rules = rules
+        @task = task
       end
 
       def execute
         MessageCat::Core::Database.connect
         MessageCat::Core::Database.migrate
         @mailboxes.each do |mailbox|
-          execute_rules(mailbox, @rules)
+          execute_rules(mailbox)
         end
       end
 
       private
 
-        def execute_rules(mailbox, rules)
+        def execute_rules(mailbox)
           # select
           @server.select(mailbox)
           # search
@@ -33,7 +33,7 @@ module MessageCat
           uids = @server.imap.uid_search(keys).reverse
           uids.each_slice(1) do |uids_subset|
             fetch(uids_subset).each do |uid, body|
-              @rules.execute(@server, uid, ::Mail.new(body))
+              @task.execute(@server, uid, ::Mail.new(body))
             end
           rescue ActiveRecord::ActiveRecordError => e
             throw e
